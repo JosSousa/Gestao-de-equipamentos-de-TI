@@ -1,0 +1,41 @@
+#INCLUDE 'PROTHEUS.ch'
+
+/*/{Protheus.doc} AF240CLA
+Ponto de entrada chamado ao fim do processo
+de classificacao de bens.
+@type function
+@version  1.0.0
+@author Josue Oliveira
+@since 04/04/2026
+/*/
+User Function AF240CLA()
+    IF SN1->N1_GRUPO == '0002'
+        IF Alltrim(SN1->N1_PRODUTO) == "CDE0123"
+            BEGIN TRANSACTION
+                DbSelectArea("ZT1")
+                ZT1->(Reclock("ZT1",.T.))
+                    ZT1->ZT1_FILIAL := SN1->N1_FILIAL
+                    ZT1->ZT1_CODEQU := GETSXENUM("ZT1","ZT1_CODEQU")
+                    ZT1->ZT1_CBASE  := SN1->N1_CBASE
+                    ZT1->ZT1_CHAPA  := SN1->N1_CHAPA
+                    ZT1->ZT1_STATUS := "1"
+                    ZT1->ZT1_TIPO   := "1"
+                    ZT1->ZT1_DATATU := ddatabase
+                    ZT1->ZT1_USRATU := cUserName
+                ZT1->(MsUnlock())
+                DbSelectArea("ZT2")
+                ZT2->(Reclock("ZT2",.T.))
+                    ZT2->ZT2_FILIAL := SN1->N1_FILIAL
+                    ZT2->ZT2_CODEQU := ZT1->ZT1_CODEQU
+                    ZT2->ZT2_SEQUEN := "0001"
+                    ZT2->ZT2_STATUS := "0"
+                    ZT2->ZT2_DATATU := ddatabase
+                    ZT2->ZT2_USRATU := cUserName
+                ZT2->(MsUnlock())
+                ZT1->(DbCloseArea())
+                ZT2->(DbCloseArea())
+            END TRANSACTION
+            ConfirmSX8()
+        ENDIF
+    ENDIF
+Return

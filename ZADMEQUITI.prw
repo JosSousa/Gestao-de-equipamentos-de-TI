@@ -16,7 +16,7 @@ User Function ZADMEQUITI()
 Return
 
 /*/{Protheus.doc} BrowseDef
-Funcao responsavel por criacao do BroseDef.
+Funcao responsavel por criacao do BrowseDef.
 @type function
 @version 1.0.0
 @author Josue Oliveira
@@ -40,9 +40,13 @@ Funcao que cria o MenuDef
 /*/
 Static Function MenuDef()
   Local aMenu     := {}
-  ADD OPTION aMenu TITLE 'Visualizar' ACTION 'VIEWDEF.ZADMEQUITI' OPERATION MODEL_OPERATION_VIEW ACCESS 0  //OPERATION 1
-  ADD OPTION aMenu TITLE 'Incluir'    ACTION 'VIEWDEF.ZADMEQUITI' OPERATION MODEL_OPERATION_INSERT ACCESS 0  //OPERATION 3
-  ADD OPTION aMenu TITLE 'Alterar'    ACTION 'VIEWDEF.ZADMEQUITI' OPERATION MODEL_OPERATION_UPDATE ACCESS 0  //OPERATION 4
+  ADD OPTION aMenu TITLE 'Visualizar'         ACTION 'VIEWDEF.ZADMEQUITI'       OPERATION MODEL_OPERATION_VIEW ACCESS 0  //OPERATION 1
+  ADD OPTION aMenu TITLE 'Incluir'            ACTION 'VIEWDEF.ZADMEQUITI'       OPERATION MODEL_OPERATION_INSERT ACCESS 0  //OPERATION 3
+  ADD OPTION aMenu TITLE 'Alterar'            ACTION 'VIEWDEF.ZADMEQUITI'       OPERATION MODEL_OPERATION_UPDATE ACCESS 0  //OPERATION 4
+  ADD OPTION aMenu TITLE 'Retornar Equip'     ACTION 'U_ZTIADM002'              OPERATION 6 ACCESS 0
+  ADD OPTION aMenu TITLE 'Manutencao'         ACTION 'U_ZTIADM003'              OPERATION 6 ACCESS 0
+  ADD OPTION aMenu TITLE 'Baixa de Equip'     ACTION 'U_ZTIADM004'              OPERATION 6 ACCESS 0
+  ADD OPTION aMenu TITLE 'Entrega de Equip'   ACTION 'U_ENTREGADEEQUIPAMENTO'   OPERATION 6 ACCESS 0
 Return aMenu
 
 /*/{Protheus.doc} ModelDef
@@ -68,7 +72,6 @@ Static Function ModelDef()
 
   //Combina os campos que nao podem se repetir, ficarem iguais.
   oModel:GetModel("ZT2DETAIL"):SetUniqueLine({"ZT2_CODEQU","ZT2_SEQUEN"})
-
   oModel:SetDescription("Equipamentos de TI")
   oModel:GetModel("ZT1MASTER"):SetDescription("Equipamentos de TI")
   oModel:GetModel("ZT2DETAIL"):SetDescription("Movimentos dos Equipamentos")
@@ -100,11 +103,13 @@ Static Function ViewDef()
 
   //Carrega o model importado para a View.
   oView:SetModel(oModel)
+  oView:AddUserButton("Especificacoes","MAGIC_BMP",{|oView| U_ZTIADM001(oView)},"Especificacoes do equipamento")
 
   //Cria as views de cabecalho e item, com as estruturas de dados criadas acima.
   oView:AddField("VIEWZT1",oStZT1,"ZT1MASTER")
   oView:AddGrid("VIEWZT2",oStZT2,"ZT2DETAIL")
   oView:AddIncrementField("ZT2DETAIL","ZT2_SEQUEN")
+  
 
   //Define o tamanho dos BOX horizontais para CABECALHO E GRID.
   oView:CreateHorizontalBox("CABEC",30)
